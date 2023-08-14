@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dynamic Page Example</title>
+  <style>
+    .highlight {
+      background-color: yellow;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dynamic Page Example</h1>
+  
+  <label for="input1">Input 1:</label>
+  <textarea id="input1" oninput="autoPopulateInputs()" placeholder="Enter text for Input 1"></textarea><br>
+
+  <label for="input2">Input 2:</label>
+  <textarea id="input2" placeholder="Enter text for Input 2"></textarea><br>
+
+  <label for="input3">Input 3:</label>
+  <textarea id="input3" placeholder="Enter text for Input 3"></textarea><br>
+
+  <label for="input4">Input 4:</label>
+  <textarea id="input4" placeholder="Enter text for Input 4"></textarea><br>
+
+  <!-- Output buttons -->
+  <button onclick="generateOutput('output1')">Toggle Output 1</button>
+  <button onclick="generateOutput('output2')">Toggle Output 2</button>
+  <!-- Load All button -->
+  <button onclick="loadAllContent()">Load All</button>
+  <!-- Output containers -->
+  <div id="output1"></div>
+  <div id="output2"></div>
+  
+  <!-- Endnote section -->
+  <h2>Endnote</h2>
+  <div id="endnote"></div>
+  
+  <script>
+    var valuesArray = [
+      { input1: "123", input2: "value12", input3: "value13", input4: "value14" },
+      { input1: "456", input2: "value22", input3: "value23", input4: "value24" },
+      // Add more values as needed
+    ];
+    
+    function autoPopulateInputs() {
+      var input1Value = document.getElementById("input1").value;
+      var matchingValue = valuesArray.find(function(item) {
+        return item.input1 === input1Value;
+      });
+      
+      if (matchingValue) {
+        document.getElementById("input2").value = matchingValue.input2;
+        document.getElementById("input3").value = matchingValue.input3;
+        document.getElementById("input4").value = matchingValue.input4;
+      } else {
+        document.getElementById("input2").value = "";
+        document.getElementById("input3").value = "";
+        document.getElementById("input4").value = "";
+      }
+    }
+
+    // Function to generate output based on selected button
+    function generateOutput(outputId) {
+      var input1Value = document.getElementById("input1").value;
+      var input2Value = document.getElementById("input2").value;
+      var input3Value = document.getElementById("input3").value;
+      var input4Value = document.getElementById("input4").value;
+      
+      var matchingValue = valuesArray.find(function(item) {
+        return item.input1 === input1Value;
+      });
+      
+      if (matchingValue) {
+        if (outputId === 'output1') {
+          var outputText = '<a href="#" onclick="toggleOutput2Visibility(\'' + input1Value + '\')">' + input1Value + '</a>' + ":"  + input2Value + " said GOOD Day to " + input3Value;
+          document.getElementById(outputId).innerHTML = outputText;
+        } else if (outputId === 'output2') {
+          var outputText = input1Value + ":" + input4Value;
+          document.getElementById(outputId).textContent = outputText;
+        }
+      } else {
+        document.getElementById(outputId).textContent = "No matching value found.";
+      }
+
+      // Toggle content visibility
+      var outputContainer = document.getElementById(outputId);
+      var isVisible = outputContainer.style.display === 'block';
+      outputContainer.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function loadAllContent() {
+  var output1Container = document.getElementById('output1');
+  var output2Container = document.getElementById('output2');
+  var endnoteContainer = document.getElementById('endnote');
+  output1Container.innerHTML = "";
+  output2Container.innerHTML = "";
+  endnoteContainer.innerHTML = "";
+
+  valuesArray.forEach(function(item) {
+    var output1Text = '<a href="#" onclick="toggleOutput2Visibility(\'' + item.input1 + '\')">' + item.input1 + '</a>' + ":"  + item.input2 + " said GOOD Day to " + item.input3;
+    var output2Text = item.input1 + ":" + item.input4;
+    
+    var output1Div = document.createElement('div');
+    output1Div.innerHTML = output1Text;
+    output1Container.appendChild(output1Div);
+    
+    var output2Div = document.createElement('div');
+    output2Div.textContent = output2Text;
+    output2Container.appendChild(output2Div);
+    
+    var endnoteText = '<a href="#" onclick="toggleOutput2Visibility(\'' + item.input1 + '\')">' + item.input1 + '</a>' + ":" + item.input4;
+    var endnoteDiv = document.createElement('div');
+    endnoteDiv.innerHTML = endnoteText;
+    endnoteDiv.setAttribute('data-input1', item.input1);
+    endnoteContainer.appendChild(endnoteDiv);
+  });
+
+  // Toggle content visibility
+  var isVisible1 = output1Container.style.display === 'block';
+  output1Container.style.display = isVisible1 ? 'none' : 'block';
+
+  var isVisible2 = output2Container.style.display === 'block';
+  output2Container.style.display = isVisible2 ? 'none' : 'block';
+
+  var isVisibleEndnote = endnoteContainer.style.display === 'block'; // Added this line
+  endnoteContainer.style.display = isVisibleEndnote ? 'none' : 'block'; // Added this line
+}
+
+
+    function toggleOutput2Visibility(input1Value) {
+      var output2Container = document.getElementById('output2');
+      var output2Divs = output2Container.getElementsByTagName('div');
+
+      for (var i = 0; i < output2Divs.length; i++) {
+        var output2Div = output2Divs[i];
+        if (output2Div.getAttribute('data-input1') === input1Value) {
+          if (output2Div.style.display === 'none') {
+            output2Div.style.display = 'block';
+          } else {
+            output2Div.style.display = 'none';
+          }
+        } else {
+          output2Div.style.display = 'none';
+        }
+      }
+
+      var output1Container = document.getElementById('output1');
+      var output1Divs = output1Container.getElementsByTagName('div');
+
+      for (var i = 0; i < output1Divs.length; i++) {
+        var output1Div = output1Divs[i];
+        if (output1Div.firstChild.textContent === input1Value) {
+          output1Div.classList.toggle('highlight');
+        } else {
+          output1Div.classList.remove('highlight');
+        }
+      }
+
+      var endnoteContainer = document.getElementById('endnote');
+      var endnoteDivs = endnoteContainer.getElementsByTagName('div');
+
+      for (var i = 0; i < endnoteDivs.length; i++) {
+        var endnoteDiv = endnoteDivs[i];
+        if (endnoteDiv.getAttribute('data-input1') === input1Value) {
+          endnoteDiv.classList.toggle('highlight');
+        } else {
+          endnoteDiv.classList.remove('highlight');
+        }
+      }
+    }
+
+  </script>
+</body>
+</html>
+<!--approved -->
